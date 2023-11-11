@@ -1,134 +1,120 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication is Fun</title>
+    <style>
+        body {text-align: center; background-color: lightseagreen; color: black;}
+    </style>
+</head>
+<body>
+    <div id="authForm">
+        <h2>Sign Up or Sign In</h2>
+        <input type="email" placeholder="email" id="userEmail">
+        <input type="password" placeholder="password" id="userPassword">  <br><br>
+        <button id="signUpButton">Sign Up</button>
+        <button id="signInButton">Sign In</button>
+    </div>
 
-  <head>
-    <meta name = "viewport" content = "width = device-width, initial-scale = 1.0">
-    <title>Project 1</title>
-    <link href = "project1.css" rel = "stylesheet" type = "text/css">
-  </head>
+    <div id="secretContent">
+        <h3>This is top secret information that you can only see if</h3>
+        <h1>AUTHENTICATED</h1>
+        <button id="signOutButton">Sign Out</button>
+    </div>
 
-  <body>
-    <header class = "header">
-       <a href = "#"><img src = "pictures/Screen Shot 2023-07-01 at 9.01.18 PM.png" class = "logo" ></a>
-       <nav class = "navigationmenu">
-
-        <a href = "#">ABOUT US</a>
-        <a href = "#">PRODUCTS</a>
-        <a href = "#">CONTACT US</a>
-        <a href = "#">SEARCH</a>
-        <a href = "#">SHOP</a>
+    <script type="module">
+        //Update the below URL with the appropriate version if necessary.
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-app.js";
+        import {
+            getAuth,
+            createUserWithEmailAndPassword,
+            signInWithEmailAndPassword,
+            onAuthStateChanged,
+            signOut
+        //Update the below URL with the appropriate version if necessary.
+        } from "https://www.gstatic.com/firebasejs/10.6.0/firebase-auth.js";
+       
       
-      </nav>
-    </header>
+        var firebaseConfig = {
+			 apiKey: "AIzaSyDB68h4bBe6KO8aLxiG5M5O6Z9GwxRfevc",
+  authDomain: "twuidservices-project-3813c.firebaseapp.com",
+  projectId: "twuidservices-project-3813c",
+  storageBucket: "twuidservices-project-3813c.appspot.com",
+  messagingSenderId: "349980427975",
+  appId: "1:349980427975:web:0d62411be7811bf57860e2",
+  measurementId: "G-1DDL365GL5"
+		};
 
-    <div class = "flex-container">
+      
+    
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
 
-      <div class = "flex-item flex1"> <img src = "pictures/Screen Shot 2023-07-01 at 2.40.31 PM.png " class = "picture"> </div>
-      <div class = "flex-item flex2"><a class = "words"><br><br><br>Crispy cookies topped with artificially flavored marshmallow and coconut with just a touch of filling. </a> <div class = "rating"></div>
-      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-      <a><br></a>
-       <span class = "fa fa-star fa-3x checked"></span>
-       <span class = "fa fa-star fa-3x checked"></span>
-       <span class = "fa fa-star fa-3x checked"></span>
-       <span class = "fa fa-star fa-3x checked"></span>
-       <span class = "fa fa-star fa-3x"></span>
-       <a> (1258)</a>
-   </div>
-   </div>
+        const userEmail = document.querySelector("#userEmail");
+        const userPassword = document.querySelector("#userPassword");
+        const authForm = document.querySelector("#authForm");
+        const secretContent = document.querySelector("#secretContent");
+        const signUpButton = document.querySelector("#signUpButton");
+        const signInButton = document.querySelector("#signInButton");
+        const signOutButton = document.querySelector("#signOutButton");
 
+        secretContent.style.display = 'none';
 
-   <div style="width: 100%; overflow: hidden;">
+        const userSignUp = async() => {
+            const signUpEmail = userEmail.value;
+            const signUpPassword = userPassword.value;
+            createUserWithEmailAndPassword(auth, signUpEmail, signUpPassword)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                console.log(user);
+                alert("Your account has been created!");
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode + errorMessage)
+            })
+        }
 
-    <div class = "tablediv" style = "width: 600px; float: left;">
-      <h2 class = "nutrition">Nutrition and Ingredients</h2>
-      <h3 class = "nutrition"><br>Amount Per Serving: 2 pieces</h3>
-      <a><br></a>
-<table class = "table">
+        const userSignIn = async() => {
+            const signInEmail = userEmail.value;
+            const signInPassword = userPassword.value;
+            signInWithEmailAndPassword(auth, signInEmail, signInPassword)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                alert("You have signed in successfully!");
+            })
+            .catch((error) => {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.log(errorCode + errorMessage)
+            })
+        }
 
-  <tr>
+        const checkAuthState = async() => {
+            onAuthStateChanged(auth, user => {
+                if(user) {
+                    authForm.style.display = 'none';
+                    secretContent.style.display = 'block';
+                }
+                else {
+                    authForm.style.display = 'block';
+                    secretContent.style.display = 'none';
+                }
+            })
+        }
 
-    <tr>
-    <th>Calories</th>
-    <td>110</td>
-    </tr>
+        const userSignOut = async() => {
+            await signOut(auth);
+        }
 
-    <tr>
-    <th>Total Fat 2.5g</th>
-    <td>4%</td>
-    </tr>
+        checkAuthState();
 
-    <tr>
-    <th>Saturated Fat 1.5g</th>
-    <td>8%</td>
-    </tr>
-
-    <tr>
-    <th>Trans Fat 0g</th>
-    <td></td>
-    </tr>
-
-    <tr>
-    <th>Polyunsaturated Fat 1g</th>
-    <td></td>
-    </tr>
-
-    <tr>
-    <th>Monounsaturated Fat 1g</th>
-    <td></td>
-    </tr>
-
-    <tr>
-    <th>Cholesterol</th>
-    <td>0%</td>
-    </tr>
-
-    <tr>
-    <th>Sodium</th>
-    <td>2%</td>
-    </tr>
-
-    <tr>
-    <th>Total Carbohydrate 21g</th>
-    <td>7%</td>
-    </tr>
-
-    <tr>
-    <th>Dietary Fiber 0g</th>
-    <td>0%</td>
-    </tr>
-
-    <tr>
-    <th>Sugars 12g</th>
-    <td></td>
-    </tr>
-
-    <tr>
-    <th>Protein 1g</th>
-    <td></td>
-    </tr>
-  </tr>
-</table>
-</div>
-  </div>
-
-  <div class = "references">
-    <h4><br><br><br><br><br>References:</h4>
-    <p>
-    <a>All images, logos, and brand information related to Sponch belong to Marinela USA.</a>
-    <a><br>Sponch. Marinela USA. (n.d.). https://marinelausa.com/sponch</a>
-    <a><br>Soegaard, M. (2023, July 2). Adaptive vs. Responsive Design. The Interaction Design Foundation. https://www.interaction-design.org/literature/article/adaptive-vs-responsive-design</a>
-    <a><br>Soegaard, M. (2023b, July 2). Repetition, pattern, and Rhythm. The Interaction Design Foundation. https://www.interaction-design.org/literature/article/repetition-pattern-and-rhythm </a>
-    <a><br>Cronenwett, D. (2019, October 31). Designing web and software applications - sketch video tutorial: Linkedin learning, formerly Lynda.com. LinkedIn. https://www.linkedin.com/learning/interaction-design-software-and-web-design-patterns/designing-web-and-software-applications?leis=LTI13&amp;u=57685713 </a>
-    <a><br>Cronenwett, D. (2020, March 19). Introducing the interface - sketch video tutorial: Linkedin learning, formerly Lynda.com. LinkedIn. https://www.linkedin.com/learning/interaction-design-interface/introducing-the-interface?leis=LTI13&amp;u=57685713 </a>
-    <a><br>Cronenwett, D. (2019b, November 1). Using design patterns - interaction design: Design Patterns as building blocks video tutorial: Linkedin learning, formerly Lynda.com. LinkedIn. https://www.linkedin.com/learning/interaction-design-design-patterns-as-building-blocks/using-design-patterns?leis=LTI13&amp;u=57685713 </a>
-    <a><br>CSS tutorial. (n.d.). https://www.w3schools.com/css/ </a>
-    <a><br>HTML styles - CSS. HTML Styles CSS. (n.d.). https://www.w3schools.com/html/html_css.asp </a>
-    <a><br>How to - star rating. How To Create a Simple Star Rating with CSS. (n.d.). https://www.w3schools.com/howto/howto_css_star_rating.asp</a>
-    <a><br>YouTube. (2023). YouTube. Retrieved July 2, 2023, from https://www.youtube.com/watch?v=2DVkNvVcQAU. 
-    <a><br>Google. (n.d.). Material symbols and icons. Google Fonts. https://fonts.google.com/icons?selected=Material%2BSymbols%2BRounded%3Asearch%3AFILL%401%3Bwght%40700%3BGRAD%40200%3Bopsz%4048&icon.style=Rounded&icon.query=search </a>
-    </p> 
-  </div>
-
-  </body>
-  
+        signUpButton.addEventListener('click', userSignUp);
+        signInButton.addEventListener('click', userSignIn);
+        signOutButton.addEventListener('click', userSignOut);
+      </script>
+</body>
 </html>
